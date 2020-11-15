@@ -1,0 +1,26 @@
+#title {
+  display: flex;
+  justify-content: center;
+}
+
+#fav-clr {
+  color: blue;
+}
+
+#main-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#gameArea {
+  width: 400px;
+  height: 600px;
+  border: 1px solid black;
+}
+
+#fav-animal {
+  width: 400px;
+  height: 300px;
+  border-radius: 10px;
+}

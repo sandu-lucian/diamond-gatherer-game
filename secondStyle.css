@@ -3,13 +3,6 @@
   justify-content: center;
 }
 
-#main-container {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-#gameArea,
 #canvas2 {
   width: 600px;
   height: 400px;

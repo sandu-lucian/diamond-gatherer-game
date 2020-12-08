@@ -6,69 +6,47 @@
     <link rel="stylesheet" href="./css/style.css" />
     <script src="/socket.io/socket.io.js" type="module"></script>
     <script src="./js/main.js" type="module"></script>
+    <script src="./js/temaCurs4.js" type="module"></script>
     <title>Diamond Gatherer</title>
   </head>
   <body>
-    <!-- <h1 id="title">Diamond Gatherers</h1>
-    <div id="main-game-container">
-      <canvas id="gameArea" width="600" height="400"></canvas>
-      <a href="./about">Next Page</a>
-    </div> -->
-    <!-- <img src="assets/map.png" class="display-none" id="map-image" />
-    <div id="join-chat">
-      <input type="text" id="user-name-input" placeholder="Enter your name" />
-      <button id="join-chat-button">Join Chat</button>
-      <p id="username-missing" class="display-none">
-        Please enter user name to join chat!
-      </p>
-    </div>
-    <div id="chat-container" class="display-none">
-      <div id="chat-messages"></div>
-      <input type="text" id="message" placeholder="Your message" />
-      <button id="send-message-button">Send message</button>
-      <br />
-      <button id="leave-chat-button">Leave chat</button>
+    <!-- IMAGES -->
+
+    <img src="assets/map.png" class="display-none" id="map-image" />
+    <img
+      src="assets/space-ranger-player.png"
+      class="display-none"
+      id="space-ranger"
+    />
+    <img
+      src="assets/pink-lady-player.png"
+      class="display-none"
+      id="pink-lady"
+    />
+
+    <!-- MENU -->
+
+    <div id="menu">
+      <div id="create-game-container">
+        <input
+          id="game-name-input"
+          type="text"
+          placeholder="Enter the game name"
+        />
+        <button id="create-game-button">Create Game!</button>
+        <p id="gamename-missing" class="display-none">
+          Please enter a name to create a new game!
+        </p>
+      </div>
+
+      <div id="game-list"></div>
     </div>
 
-    <div id="create-game">
-      <input
-        id="game-name-input"
-        type="text"
-        placeholder="Enter the game name"
-      />
-      <button id="create-game-button">Create game</button>
-    </div>
+    <!-- GAME -->
 
     <div id="game-container" class="display-none">
       <canvas id="game-canvas" width="960" height="640"></canvas>
-    </div> -->
-
-    <div id="join-chat">
-      <input
-        type="text"
-        id="username-input"
-        placeholder="Enter your username"
-      />
-      <button id="join-chat-btn">Join Chat</button>
-      <p id="username-missing" class="display-none">
-        Please enter username to join chat!
-      </p>
-    </div>
-
-      <div id="chat-container" class="display-none">
-        <div id="chat-messages"></div>
-        <p id="online-users-count"></p>
-        <input type="text" id="message" placeholder="Your message" />
-        <input type="color" id="msg-color">
-        <button id="send-message-btn">Send</button>
-        <br />
-        <button id="leave-chat-btn">Leave chat</button>
-      </div>
-    </div>
-    
-    <div id="showCounter" class="display-none">
-      <button id="increment-btn">Click to add!</button>
-      <p id="counter"></p>
+      <button id="back-to-menu-btn">Back to menu</button>
     </div>
   </body>
 </html>

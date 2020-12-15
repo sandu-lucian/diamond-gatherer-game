@@ -6,6 +6,7 @@ const io = require("socket.io")(http);
 const SpaceRanger = require("./models/SpaceRanger");
 const PinkLady = require("./models/PinkLady");
 const Game = require("./models/Game");
+const Bullet = require("./models/Bullet");
 
 http.listen(5000, () => {
   console.log("Server started at port 5000");
@@ -20,6 +21,7 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
   console.log("Socket connected -> " + socket.id);
   socket.join("menu");
+
   Object.keys(games).forEach(function (gameId) {
     if (games[gameId].players.length === 1) {
       socket.emit("add-game-to-list", {
@@ -46,30 +48,51 @@ io.on("connection", (socket) => {
       gameName: gameName,
       gameId: gameId,
     });
+  });
 
-    console.log(games);
-    console.log(players);
+  socket.on("join-game", function (gameId) {
+    players[socket.id] = new PinkLady({ gameId: gameId, socketId: socket.id });
+    games[gameId].players.push(players[socket.id]);
+    games[gameId].generateDiamonds();
+    socket.join(gameId);
+    io.to("menu").emit("remove-game-from-list", gameId);
   });
 
   socket.on("start-moving-player", function (direction) {
     if (players[socket.id]) {
+      if (games[players[socket.id].gameId].players.length != 2) {
+        return;
+      }
       players[socket.id].startMoving(direction);
     }
   });
 
   socket.on("stop-moving-player", function (axis) {
     if (players[socket.id]) {
+      if (games[players[socket.id].gameId].players.length != 2) {
+        return;
+      }
       players[socket.id].stopMoving(axis);
     }
   });
 
-  socket.on("join-game", function (gameId) {
-    players[socket.id] = new PinkLady({ gameId: gameId, socketId: socket.id });
-    games[gameId].players.push(players[socket.id]);
-    socket.join(gameId);
-    io.to("menu").emit("remove-game-from-list", gameId);
+  socket.on("attack", function () {
+    if (players[socket.id]) {
+      if (games[players[socket.id].gameId].players.length != 2) {
+        return;
+      }
+      const game = games[players[socket.id].gameId];
 
-    console.log(players);
+      if (game.bullets.length > 0) {
+        for (let i = 0; i < game.bullets.length; i++) {
+          if (game.bullets[i].player.socketId !== players[socket.id].socketId) {
+            game.bullets.push(new Bullet(players[socket.id]));
+          }
+        }
+      } else {
+        game.bullets.push(new Bullet(players[socket.id]));
+      }
+    }
   });
 
   socket.on("disconnect", function () {
@@ -79,46 +102,70 @@ io.on("connection", (socket) => {
       const playersToRemoveIds = game.players.map(function (player) {
         return player.socketId;
       });
-      game.stop();
+      clearInterval(game.gameInterval);
       delete games[gameId];
       playersToRemoveIds.forEach(function (playerToRemoveId) {
         delete players[playerToRemoveId];
       });
 
-      io.to(gameId).emit("game-over", "A player has disconnected");
+      io.to(gameId).emit("game-over", "player-disconnected", gameId);
     }
   });
 
-  socket.on("return-to-menu", function () {
-    if (players[socket.id]) {
-      const gameId = players[socket.id].gameId;
-      const game = games[gameId];
-      /* game.stop(); */
-      delete players[socket.id];
-      delete games[gameId];
-      socket.leave(gameId);
-      io.to(gameId).emit("game-over", "A player has disconnected");
-    }
-
+  socket.on("return-to-menu", function (gameId) {
+    socket.leave(gameId);
     socket.emit("menu");
-    console.log(games);
-    console.log(players);
   });
 });
 
-function gameLoop(id) {
-  if (games[id]) {
-    games[id].update();
-    const objectsForDraw = [];
-    games[id].players.forEach(function (player) {
-      objectsForDraw.push(player.forDraw());
-    });
-    io.to(id).emit("game-loop", objectsForDraw);
+function gameLoop(roomId) {
+  const game = games[roomId];
+  if (game) {
+    game.update();
+
+    if (game.over) {
+      const playersToRemoveIds = game.players.map(function (player) {
+        return player.socketId;
+      });
+      clearInterval(game.gameInterval);
+      delete games[roomId];
+      playersToRemoveIds.forEach(function (playerToRemoveId) {
+        delete players[playerToRemoveId];
+      });
+
+      io.to(roomId).emit("game-over", game.winner + "-won", roomId);
+    } else {
+      const objectsForDraw = [];
+      game.players.forEach(function (player) {
+        objectsForDraw.push(player.forDraw());
+      });
+      game.diamonds.forEach(function (diamond) {
+        objectsForDraw.push(diamond.forDraw());
+      });
+      game.bullets.forEach(function (bullet) {
+        objectsForDraw.push(bullet.forDraw());
+      });
+
+      const data = {
+        objectsForDraw,
+        gameInProgress: game.players.length == 2,
+      };
+
+      if (data.gameInProgress) {
+        data.score = {
+          "space-ranger": game.players[0].score,
+          "pink-lady": game.players[1].score,
+          "remaining-diamonds":
+            game.totalDiamonds - game.players[0].score - game.players[1].score,
+        };
+      }
+      io.to(roomId).emit("game-loop", data);
+    }
   }
 }
 
 const games = {};
-
 const players = {};
 
 module.exports.gameLoop = gameLoop;
+module.exports.games = games;

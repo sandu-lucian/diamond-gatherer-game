@@ -12,6 +12,12 @@ class PinkLady extends Player {
       down: [65, 98],
       up: [0, 33],
     };
+    this.base = {
+      x: 775,
+      y: 481,
+      width: 185,
+      height: 159,
+    };
   }
 }
 

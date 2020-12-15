@@ -1,3 +1,5 @@
+const server = require("../server");
+
 const PLAYER_DIM = {
   width: 32,
   height: 32,
@@ -16,11 +18,15 @@ class Player {
     this.direction = "down";
     this.gameId = options.gameId;
     this.socketId = options.socketId;
+    this.hasDiamond = false;
+    this.score = 0;
+    this.width = PLAYER_DIM.width;
+    this.height = PLAYER_DIM.height;
   }
 
   forDraw() {
     return {
-      imageId: this.imageId,
+      imageId: this.hasDiamond ? this.imageId + "-with-diamond" : this.imageId,
       drawImageParameters: [
         this.imageStartPoints[this.direction][this.step],
         0,
@@ -68,6 +74,49 @@ class Player {
 
   stopMoving(axis) {
     this[axis] = 0;
+  }
+
+  update() {
+    this.move();
+    if (this.hasDiamond) {
+      this.checkBaseCollision();
+    } else {
+      this.checkDiamondsCollision();
+    }
+  }
+
+  checkDiamondsCollision() {
+    const game = server.games[this.gameId];
+    game.diamonds.forEach((diamond, index) => {
+      if (this.collidedWith(diamond)) {
+        this.hasDiamond = true;
+        delete game.diamonds[index];
+      }
+    });
+  }
+
+  checkBaseCollision() {
+    if (this.collidedWith(this.base)) {
+      this.hasDiamond = false;
+      this.score++;
+    }
+  }
+
+  collidedWith(diamond) {
+    const center = {
+      x: this.x + PLAYER_DIM.width / 2,
+      y: this.y + PLAYER_DIM.height / 2,
+    };
+
+    if (
+      center.x >= diamond.x &&
+      center.x <= diamond.x + diamond.width &&
+      center.y >= diamond.y &&
+      center.y <= diamond.y + diamond.height
+    ) {
+      return true;
+    }
+    return false;
   }
 }
 

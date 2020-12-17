@@ -8,7 +8,7 @@ const PinkLady = require("./models/PinkLady");
 const Game = require("./models/Game");
 const Bullet = require("./models/Bullet");
 
-http.listen(5000, () => {
+http.listen(process.env.PORT || 5000, () => {
   console.log("Server started at port 5000");
 });
 

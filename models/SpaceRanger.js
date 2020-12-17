@@ -1,4 +1,4 @@
-const Player = require("./player");
+const Player = require("./Player");
 
 class SpaceRanger extends Player {
   constructor(options) {

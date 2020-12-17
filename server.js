@@ -138,6 +138,7 @@ function gameLoop(roomId) {
       const objectsForDraw = [];
       game.players.forEach(function (player) {
         objectsForDraw.push(player.forDraw());
+        objectsForDraw.push(player.hpForDraw()); //de vazut
       });
       game.diamonds.forEach(function (diamond) {
         objectsForDraw.push(diamond.forDraw());

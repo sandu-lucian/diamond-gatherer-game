@@ -30,6 +30,16 @@ class Game {
         this.players[0].score > this.players[1].score
           ? "space-ranger"
           : "pink-lady";
+      return;
+    }
+    if (
+      this.inProgress() &&
+      (this.players[0].hp === 0 || this.players[1].hp === 0)
+    ) {
+      this.over = true;
+      this.winner =
+        this.players[0].hp > this.players[1].hp ? "space-ranger" : "pink-lady";
+      return;
     }
     this.players.forEach(function (player) {
       player.update();

@@ -27,7 +27,7 @@ class Player {
 
   forDraw() {
     return {
-      imageId: this.hasDiamond ? this.imageId + "-with-diamond" : this.imageId,
+      imageId: this.hasDiamond ? `${this.imageId}-with-diamond` : this.imageId,
       drawImageParameters: [
         this.imageStartPoints[this.direction][this.step],
         0,

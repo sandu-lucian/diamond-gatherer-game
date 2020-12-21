@@ -32,22 +32,24 @@ class Game {
           : "pink-lady";
       return;
     }
+
     if (
       this.inProgress() &&
       (this.players[0].hp === 0 || this.players[1].hp === 0)
     ) {
       this.over = true;
-      this.winner =
-        this.players[0].hp > this.players[1].hp ? "space-ranger" : "pink-lady";
+      this.winner = this.players[0].hp > 0 ? "space-ranger" : "pink-lady";
       return;
     }
+
     this.players.forEach(function (player) {
       player.update();
     });
+
     this.bullets.forEach((bullet, index) => {
       if (bullet.distance <= 0) {
         delete this.bullets[index];
-        this.bullets = this.bullets.filter((b) => b != null);
+        delete server.bullets[bullet.player.socketId];
       } else {
         bullet.update();
       }

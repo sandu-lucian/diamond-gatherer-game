@@ -8,12 +8,12 @@ class Bullet {
     this.dx = 0;
     this.dy = 0;
     this.speed = 5;
-    this.imageId = player.imageId + "-bullet";
+    this.imageId = `${player.imageId}-bullet`;
     this.distance = 200;
-    this.setSpeed();
     this.width = 13;
     this.height = 13;
     this.opponent = this.findOpponent();
+    this.setSpeed();
   }
 
   setSpeed() {

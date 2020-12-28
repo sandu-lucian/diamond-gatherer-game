@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "SuperLegendBoy";
+  src: url("../assets/fonts/SuperLegendBoy.ttf");
+}
+
 body {
   margin: 0px;
   padding: 0px;
@@ -5,32 +10,69 @@ body {
 
 * {
   box-sizing: border-box;
+  font-family: "SuperLegendBoy";
 }
 
-.display-none {
-  display: none;
+.main-container {
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../assets/images/game-bg.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  animation: fade-in 2s ease-in-out 1 forwards;
 }
 
-#title {
-  display: flex;
-  justify-content: center;
+#instructions {
+  width: 500px;
+  height: 500px;
+  background-image: url("../assets/images/instructions.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
 }
 
-#create-game-container {
-  margin-top: 10px;
+#instructions::before {
+  content: "";
+  width: 500px;
+  height: 500px;
+  background-color: white;
+  opacity: 0.7;
+  border-radius: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -5;
 }
 
-#game-canvas {
-  border: 1px solid black;
+#game-list {
+  height: 75vh;
+  width: 400px;
+  overflow: auto;
 }
 
 .game-element {
-  border: 1px solid black;
-  text-align: center;
-  padding: 10px;
-  margin: 10px;
+  height: 50px;
+  animation: slide-left 0.4s ease-in-out;
 }
 
-#back-to-menu-btn {
-  margin: 10px;
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-left {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

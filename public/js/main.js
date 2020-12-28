@@ -9,33 +9,33 @@ const context = canvas.getContext("2d");
 const socket = io();
 
 document.addEventListener("keydown", function (e) {
-  switch (e.key) {
-    case "ArrowUp":
+  switch (e.code) {
+    case "KeyW":
       socket.emit("start-moving-player", "up");
       break;
-    case "ArrowDown":
+    case "KeyS":
       socket.emit("start-moving-player", "down");
       break;
-    case "ArrowLeft":
+    case "KeyA":
       socket.emit("start-moving-player", "left");
       break;
-    case "ArrowRight":
+    case "KeyD":
       socket.emit("start-moving-player", "right");
       break;
-    case " ":
+    case "Space":
       socket.emit("attack");
       break;
   }
 });
 
 document.addEventListener("keyup", function (e) {
-  switch (e.key) {
-    case "ArrowUp":
-    case "ArrowDown":
+  switch (e.code) {
+    case "KeyW":
+    case "KeyS":
       socket.emit("stop-moving-player", "dy");
       break;
-    case "ArrowLeft":
-    case "ArrowRight":
+    case "KeyA":
+    case "KeyD":
       socket.emit("stop-moving-player", "dx");
       break;
   }
@@ -48,12 +48,10 @@ document
     const gameName = input.value;
 
     if (gameName.length > 0) {
-      document.getElementById("gamename-missing").classList.add("display-none");
+      document.getElementById("gamename-missing").classList.add("invisible");
       socket.emit("create-game", gameName);
     } else {
-      document
-        .getElementById("gamename-missing")
-        .classList.remove("display-none");
+      document.getElementById("gamename-missing").classList.remove("invisible");
     }
   });
 
@@ -67,14 +65,14 @@ document
   });
 
 socket.on("menu", function () {
-  document.getElementById("menu").classList.remove("display-none");
-  document.getElementById("game-container").classList.add("display-none");
+  document.getElementById("menu").classList.remove("d-none");
+  document.getElementById("game-container").classList.add("d-none");
 });
 
 socket.on("game-loop", function (data) {
-  document.getElementById("menu").classList.add("display-none");
-  document.getElementById("back-to-menu-btn").classList.add("display-none");
-  document.getElementById("game-container").classList.remove("display-none");
+  document.getElementById("menu").classList.add("d-none");
+  document.getElementById("back-to-menu-btn").classList.add("invisible");
+  document.getElementById("game-container").classList.remove("d-none");
 
   context.drawImage(document.getElementById("map-image"), 0, 0);
 
@@ -86,10 +84,7 @@ socket.on("game-loop", function (data) {
   });
 
   if (data.gameInProgress) {
-    document
-      .getElementById("waiting-for-players")
-      .classList.add("display-none");
-    document.getElementById("score-container").classList.remove("display-none");
+    document.getElementById("waiting-for-players").classList.add("d-none");
     document.getElementById("space-ranger-score").innerHTML =
       data.score["space-ranger"];
     document.getElementById("pink-lady-score").innerHTML =
@@ -97,22 +92,29 @@ socket.on("game-loop", function (data) {
     document.getElementById("remaining-diamonds").innerHTML =
       data.score["remaining-diamonds"];
   } else {
-    document
-      .getElementById("waiting-for-players")
-      .classList.remove("display-none");
-    document.getElementById("score-container").classList.add("display-none");
+    document.getElementById("waiting-for-players").classList.remove("d-none");
   }
 });
 
 socket.on("add-game-to-list", function (options) {
   const gameElementContainer = document.createElement("div");
-  gameElementContainer.classList.add("game-element");
+  gameElementContainer.classList.add(
+    "d-flex",
+    "justify-content-between",
+    "align-items-center",
+    "mx-3",
+    "my-1",
+    "mw-100",
+    "border-bottom",
+    "game-element"
+  );
   gameElementContainer.id = options.gameId;
 
-  const gameNameElement = document.createElement("p");
+  const gameNameElement = document.createElement("span");
   gameNameElement.innerHTML = options.gameName;
 
   const joinGameBtn = document.createElement("button");
+  joinGameBtn.classList.add("btn", "btn-success");
   joinGameBtn.innerHTML = "Join Game!";
 
   joinGameBtn.addEventListener("click", function () {
@@ -126,12 +128,11 @@ socket.on("add-game-to-list", function (options) {
 });
 
 socket.on("remove-game-from-list", function (gameId) {
-  document.getElementById(gameId).classList.add("display-none");
+  document.getElementById(gameId).remove();
 });
 
 socket.on("game-over", function (imageId, gameId) {
   context.drawImage(document.getElementById(imageId), 0, 0);
-  document.getElementById("back-to-menu-btn").classList.remove("display-none");
+  document.getElementById("back-to-menu-btn").classList.remove("invisible");
   document.getElementById("back-to-menu-btn").dataset.gameId = gameId;
-  document.getElementById("score-container").classList.add("display-none");
 });
